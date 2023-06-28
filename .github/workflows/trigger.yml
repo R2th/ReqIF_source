@@ -36,6 +36,7 @@ jobs:
         done
         payload="${payload%?}" # Remove the trailing comma
         payload+="]"
+        echo $payload
         echo "changed_files_payload=$payload" >> $GITHUB_OUTPUT
 
     - name: Trigger Airflow
