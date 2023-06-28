@@ -30,9 +30,8 @@ jobs:
         payload="["
         IFS=$'\n'   # Set the input field separator to newline
         for file in ${{ steps.changed_files.outputs.changed_files }}; do
-          content=$(cat "$file")
-          escaped_content=$(echo "$content" | jq -Rs '@uri')
-          payload+="{\"name\": \"$file\", \"content\": \"$escaped_content\"},"
+          content=$(cat "$file" | base64)
+          payload+="{\"name\": \"$file\", \"content\": \"$content\"},"
         done
         payload="${payload%?}" # Remove the trailing comma
         payload+="]"
