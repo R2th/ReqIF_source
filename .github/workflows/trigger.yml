@@ -12,33 +12,38 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
 
     - name: Get changed files
-      id: file_changes
+      id: changed_files
       run: |
-        echo "::set-output name=files::$(git diff --name-only HEAD~1 HEAD)"
+        if ${{ github.event_name == 'pull_request' }}; then
+          echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
+        else
+            echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+        fi
 
     - name: Retrieve file content
-      id: file_content
+      id: changed_files_content
       run: |
-        changed_files="${{ steps.file_changes.outputs.files }}"
         payload="["
         IFS=$'\n'   # Set the input field separator to newline
-        for file in $changed_files; do
+        for file in ${{ steps.changed_files.outputs.changed_files }}; do
           content=$(cat "$file")
           escaped_content=$(echo "$content" | jq -Rs '@uri')
           payload+="{\"name\": \"$file\", \"content\": \"$escaped_content\"},"
         done
         payload="${payload%?}" # Remove the trailing comma
         payload+="]"
-        echo "::set-output name=changed_files::$payload"
+        echo "changed_files_payload=$payload" >> $GITHUB_OUTPUT
 
     - name: Trigger Airflow
       env:
         API_ENDPOINT: https://879d-42-115-94-181.ngrok-free.app
       run: |
-        changed_files="${{ steps.file_content.outputs.changed_files }}"
-        payload='{"branch": "main", "message": "Files have been changed.", "changed_files": "'"$changed_files"'"}'
+        changed_files_payload="${{ steps.changed_files_content.outputs.changed_files_payload }}"
+        payload='{"branch": "main", "message": "Files have been changed.", "changed_files": "'"$changed_files_payload"'"}'
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
