@@ -18,12 +18,24 @@ jobs:
       run: |
         echo "::set-output name=files::$(git diff --name-only HEAD^..HEAD)"
 
+    - name: Retrieve file content
+      id: file_content
+      run: |
+        changed_files="${{ steps.file_changes.outputs.files }}"
+        file_content=""
+        for file in $changed_files; do
+          content=$(cat "$file")
+          file_content+="File: $file\nContent:\n$content\n\n"
+        done
+        echo "::set-output name=content::$file_content"
+
     - name: Trigger Airflow
       env:
         API_ENDPOINT: https://879d-42-115-94-181.ngrok-free.app
       run: |
-        changed_files=$(echo "${{ steps.file_changes.outputs.files }}" | tr '\n' ',')
-        payload='{"branch": "main", "message": "Files have been changed.", "changed_files": "'"$changed_files"'"}'
+        changed_files="${{ steps.file_changes.outputs.files }}"
+        content="${{ steps.file_content.outputs.content }}"
+        payload='{"branch": "main", "message": "Files have been changed.", "files": "'"$changed_files"'", "content": "'"$content"'"}'
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
