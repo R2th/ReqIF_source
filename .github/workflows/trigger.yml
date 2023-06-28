@@ -45,17 +45,14 @@ jobs:
         PASSWORD: airflow
       run: |
         changed_files="${{ steps.changed_files_content.outputs.changed_files_payload }}"
-        payload=$(cat <<EOF
-        {
-          "conf": {
-            "branch": "main",
-            "message": "Files have been changed.",
-            "reqif_files": $changed_files
-          },
-          "note": "Trigger from Github Action"
-        }
-        EOF
-        )
+        
+        payload=$(jq -n \
+          --arg branch "main" \
+          --arg message "Files have been changed." \
+          --argjson reqif_files "$changed_files" \
+          --arg note "Trigger from Github Action" \
+          '{ "conf": { "branch": $branch, "message": $message, "reqif_files": $reqif_files }, "note": $note }')
+
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
