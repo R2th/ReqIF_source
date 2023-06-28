@@ -40,7 +40,8 @@ jobs:
 
     - name: Trigger Airflow
       env:
-        API_ENDPOINT: https://879d-42-115-94-181.ngrok-free.app
+        BASE_URL: https://879d-42-115-94-181.ngrok-free.app
+        PATH: /api/v1/dags/thethree_reqif_to_rst/dagRuns
       run: |
         changed_files_payload="${{ steps.changed_files_content.outputs.changed_files_payload }}"
         payload='{"branch": "main", "message": "Files have been changed.", "changed_files": "'"$changed_files_payload"'"}'
@@ -48,4 +49,4 @@ jobs:
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
           -d "$payload" \
-          $API_ENDPOINT
+          $BASE_URL$PATH
