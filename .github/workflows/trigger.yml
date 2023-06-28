@@ -47,7 +47,6 @@ jobs:
         changed_files="${{ steps.changed_files_content.outputs.changed_files_payload }}"
         payload='
         {
-          "dag_run_id": "thethree_reqif_to_rst",
           "conf": {
             "branch": "main", 
             "message": "Files have been changed.", 
