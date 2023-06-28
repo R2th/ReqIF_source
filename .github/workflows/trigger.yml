@@ -31,7 +31,7 @@ jobs:
         
         IFS=$'\n'   # Set the input field separator to newline
         for file in ${{ steps.changed_files.outputs.changed_files }}; do
-          content=$(cat "$file" | base64)
+          content=$(base64 < "$file")
           payload+="{\"name\": \"$file\", \"content\": \"$content\"},"
         done
         payload="${payload%?}" # Remove the trailing comma
