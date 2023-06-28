@@ -1,4 +1,4 @@
-name: Notify Local API
+name: Trigger Airflow
 
 on:
   push:
@@ -13,11 +13,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Notify Local API
+    - name: Trigger Airflow
       env:
-        API_ENDPOINT: http://localhost:3000  # Replace with the URL of your local API
+        API_ENDPOINT: https://879d-42-115-94-181.ngrok-free.app
       run: |
         curl -X POST \
           -H "Content-Type: application/json" \
+          -H "ngrok-skip-browser-warning: True" \
           -d '{"branch": "main", "message": "Files have been changed."}' \
           $API_ENDPOINT
