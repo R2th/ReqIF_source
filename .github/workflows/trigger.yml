@@ -29,7 +29,7 @@ jobs:
           escaped_content=$(echo "$content" | jq -Rs '@uri')
           file_content+="{\"name\": \"$file\", \"content\": \"$escaped_content\"},"
         done
-        file_content="${file_content::-1}" # Remove the trailing comma
+        file_content="${file_content%?}" # Remove the trailing comma
         file_content+="]"
         echo "::set-output name=contents::$file_content"
 
