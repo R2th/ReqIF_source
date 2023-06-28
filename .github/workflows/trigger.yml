@@ -44,7 +44,7 @@ jobs:
         USERNAME: airflow
         PASSWORD: airflow
       run: |
-        changed_files='"${{ steps.changed_files_content.outputs.changed_files_payload }}"'
+        changed_files=${{ steps.changed_files_content.outputs.changed_files_payload }}
         
         payload=$(cat <<EOF
         {
