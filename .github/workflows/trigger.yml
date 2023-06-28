@@ -40,16 +40,16 @@ jobs:
 
     - name: Trigger Airflow
       env:
-        API_URL: https://879d-42-115-94-181.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns 
+        API_URL: https://a275-42-115-94-181.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns 
       run: |
-        changed_files_payload="${{ steps.changed_files_content.outputs.changed_files_payload }}"
+        changed_files="${{ steps.changed_files_content.outputs.changed_files_payload }}"
         payload='
         {
           "dag_run_id": "thethree_reqif_to_rst",
           "conf": {
             "branch": "main", 
             "message": "Files have been changed.", 
-            "changed_files": "'"$changed_files_payload"'"
+            "reqif_files": "'"$changed_files"'"
           },
           "note": "Trigger from Github Action"
         }
