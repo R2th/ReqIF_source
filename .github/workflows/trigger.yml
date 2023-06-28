@@ -22,24 +22,23 @@ jobs:
       id: file_content
       run: |
         changed_files="${{ steps.file_changes.outputs.files }}"
-        file_content="["
+        payload="["
         IFS=$'\n'   # Set the input field separator to newline
         for file in $changed_files; do
           content=$(cat "$file")
           escaped_content=$(echo "$content" | jq -Rs '@uri')
-          file_content+="{\"name\": \"$file\", \"content\": \"$escaped_content\"},"
+          payload+="{\"name\": \"$file\", \"content\": \"$escaped_content\"},"
         done
-        file_content="${file_content%?}" # Remove the trailing comma
-        file_content+="]"
-        echo "::set-output name=contents::$file_content"
+        payload="${payload%?}" # Remove the trailing comma
+        payload+="]"
+        echo "::set-output name=changed_files::$payload"
 
     - name: Trigger Airflow
       env:
         API_ENDPOINT: https://879d-42-115-94-181.ngrok-free.app
       run: |
-        changed_files="${{ steps.file_changes.outputs.files }}"
-        content="${{ steps.file_content.outputs.content }}"
-        payload='{"branch": "main", "message": "Files have been changed.", "files": "'"$changed_files"'", "contents": "'"$contents"'"}'
+        changed_files="${{ steps.file_content.outputs.changed_files }}"
+        payload='{"branch": "main", "message": "Files have been changed.", "changed_files": "'"$changed_files"'"}'
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
