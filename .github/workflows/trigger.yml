@@ -39,7 +39,7 @@ jobs:
 
     - name: Trigger Airflow
       env:
-        API_URL: https://73d4-171-232-96-23.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
+        API_URL: https://b987-2402-800-6314-aaeb-c053-8993-96f9-b630.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
         USERNAME: airflow
         PASSWORD: airflow
       run: |
