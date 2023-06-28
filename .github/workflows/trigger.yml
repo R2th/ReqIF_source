@@ -50,7 +50,7 @@ jobs:
           \"conf\": {
             \"branch\": \"main\", 
             \"message\": \"Files have been changed.\", 
-            \"reqif_files\": \"$changed_files\"
+            \"reqif_files\": $changed_files
           },
           \"note\": \"Trigger from Github Action\"
         }
