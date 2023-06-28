@@ -16,7 +16,7 @@ jobs:
     - name: Get changed files
       id: file_changes
       run: |
-        echo "::set-output name=files::$(git diff --name-only HEAD^...HEAD)"
+        echo "::set-output name=files::$(git diff --name-only HEAD^...HEAD --)"
 
     - name: Retrieve file content
       id: file_content
