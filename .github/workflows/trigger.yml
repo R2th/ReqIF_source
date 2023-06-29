@@ -50,7 +50,7 @@ jobs:
         payload="
         {
           \"conf\": {
-            \"reqif_files\": ${{ env.changed_files }}
+            \"reqif_files\": "${{ env.changed_files }}"
           },
           \"note\": \"Trigger from Github Action\"
         }
