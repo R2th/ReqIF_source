@@ -30,8 +30,11 @@ jobs:
             echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
         fi
 
-    - name: Retrieve file content
-      id: changed_files_content
+    - name: Trigger Airflow
+      env:
+        API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
+        USERNAME: airflow
+        PASSWORD: airflow
       run: |
         changed_files="["
         
@@ -43,20 +46,10 @@ jobs:
         changed_files="${changed_files%?}" # Remove the trailing comma
         changed_files+="]"
         
-        echo "changed_files<<EOF" >> $GITHUB_ENV
-        echo "$changed_files" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-
-    - name: Trigger Airflow
-      env:
-        API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
-        USERNAME: airflow
-        PASSWORD: airflow
-      run: |        
         payload="
         {
           'conf': {
-            'reqif_files': ${{ env.changed_files }}
+            'reqif_files': $changed_files
           },
           'note': 'Trigger from Github Action'
         }
