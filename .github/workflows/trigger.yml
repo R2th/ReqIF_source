@@ -62,11 +62,9 @@ jobs:
         "
         payload="${payload//\'/\"}"
         
-        echo "$ENDPOINT""$PATH"
-        
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
           --user "$USERNAME:$PASSWORD" \
           -d "$payload" \
-          "$ENDPOINT$PATH"
+          "$ENDPOINT""$PATH"
