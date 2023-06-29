@@ -62,7 +62,7 @@ jobs:
         "
         payload=$(echo "$payload" | sed "s/'/\"/g")
         
-        echo "$ENDPOINT$PATH"
+        echo "$ENDPOINT""$PATH"
         
         curl -X POST \
           -H "Content-Type: application/json" \
