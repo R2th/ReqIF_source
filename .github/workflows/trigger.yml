@@ -36,10 +36,7 @@ jobs:
         done
         changed_files="${changed_files%?}" # Remove the trailing comma
         changed_files+="]"
-        echo "$changed_files"
-        echo "changed_files<<EOF" >> $GITHUB_ENV
-        echo "$changed_files" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+        echo "changed_files=$changed_files" >> "$GITHUB_OUPUT"
 
     - name: Trigger Airflow
       env:
@@ -47,16 +44,16 @@ jobs:
         USERNAME: airflow
         PASSWORD: airflow
       run: |
-        changed_files="${{ env.changed_files }}"
-        payload=$(cat <<EOF
+        changed_files="${{ steps.changed_files_content.outputs.changed_files }}"
+        
+        payload="
         {
-          "conf": {
-            "reqif_files": $changed_files
+          \"conf\": {
+            \"reqif_files\": $changed_files
           },
-          "note": "Trigger from Github Action"
+          \"note\": \"Trigger from Github Action\"
         }
-        EOF
-        )
+        "
         
         
         curl -X POST \
