@@ -37,11 +37,11 @@ jobs:
         payload="${payload%?}" # Remove the trailing comma
         payload+="]"
         echo $payload
-        echo "changed_files_payload=$payload" >> $GITHUB_OUTPUT
+        echo $payload >> $GITHUB_OUTPUT
 
     - name: Trigger Airflow
       env:
-        API_URL: https://b987-2402-800-6314-aaeb-c053-8993-96f9-b630.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
+        API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
         USERNAME: airflow
         PASSWORD: airflow
       run: |
