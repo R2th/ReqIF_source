@@ -39,7 +39,7 @@ jobs:
       run: |
         changed_files="["
         
-        for file in ${{ steps.get_changed_files.outputs.changed_files }}; do
+        for file in "${{ steps.get_changed_files.outputs.changed_files }}"; do
           content=$(cat "$file" | gzip | base64 -w0)
           changed_files+="{'name': '$file', 'content': '$content'},"
         done
