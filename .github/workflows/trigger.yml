@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main
-
+    paths:
+      - '**.reqif'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.reqif'
 jobs:
   trigger:
     runs-on: ubuntu-latest
