@@ -32,7 +32,7 @@ jobs:
         IFS=$'\n'   # Set the input field separator to newline
         for file in ${{ steps.changed_files.outputs.changed_files }}; do
           content=$(base64 -w 0 < "$file")
-          changed_files+="{\"name\": \"$file\", \"content\": \"$content\"},"
+          changed_files+="{'name': '$file', 'content': '$content'},"
         done
         changed_files="${changed_files%?}" # Remove the trailing comma
         changed_files+="]"
@@ -49,12 +49,13 @@ jobs:
       run: |        
         payload="
         {
-          \"conf\": {
-            \"reqif_files\": "${{ env.changed_files }}/\"/\""
+          'conf': {
+            'reqif_files': '${{ env.changed_files }}'
           },
-          \"note\": \"Trigger from Github Action\"
+          'note': 'Trigger from Github Action'
         }
         "
+        payload=$payload/'/\"
         
         
         curl -X POST \
