@@ -22,7 +22,7 @@ jobs:
         fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
 
     - name: Get changed files
-      id: get_changed_files_names
+      id: changed_files
       run: |
         if ${{ github.event_name == 'pull_request' }}; then
           echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
@@ -30,43 +30,44 @@ jobs:
             echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
         fi
 
-    - name: Retrieve contents
-      id: get_changed_files
+    - name: Retrieve file content
+      id: changed_files_content
       run: |
         changed_files="["
         
         IFS=$'\n'   # Set the input field separator to newline
-        for file in ${{ steps.get_changed_files_names.outputs.changed_files }}; do
+        for file in ${{ steps.changed_files.outputs.changed_files }}; do
           content=$(cat "$file" | gzip | base64 -w0)
           changed_files+="{'name': '$file', 'content': '$content'},"
         done
         changed_files="${changed_files%?}" # Remove the trailing comma
         changed_files+="]"
         
-        echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+        echo "changed_files<<EOF" >> $GITHUB_ENV
+        echo "$changed_files" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Trigger Airflow
       env:
-        ENDPOINT: https://ccd0-113-161-83-56.ngrok-free.app
-        PATH: /api/v1/dags/thethree_reqif_to_rst/dagRuns
+        API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
         USERNAME: airflow
         PASSWORD: airflow
       run: |        
         payload="
         {
           'conf': {
-            'reqif_files': ${{ steps.get_changed_files.outputs.changed_files }}
+            'reqif_files': ${{ env.changed_files }}
           },
           'note': 'Trigger from Github Action'
         }
         "
         payload=$(echo "$payload" | sed "s/'/\"/g")
+        echo $payload
         
-        echo "$ENDPOINT""$PATH"
         
         curl -X POST \
           -H "Content-Type: application/json" \
           -H "ngrok-skip-browser-warning: True" \
           --user "$USERNAME:$PASSWORD" \
           -d "$payload" \
-          "$ENDPOINT$PATH"
+          $API_URL
