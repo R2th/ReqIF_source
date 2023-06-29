@@ -31,12 +31,12 @@ jobs:
         
         IFS=$'\n'   # Set the input field separator to newline
         for file in ${{ steps.changed_files.outputs.changed_files }}; do
-          content=$(base64 < "$file")
+          content=$(base64 -w 0 < "$file")
           changed_files+="{\"name\": \"$file\", \"content\": \"$content\"},"
         done
         changed_files="${changed_files%?}" # Remove the trailing comma
         changed_files+="]"
-        
+        echo "$changed_files"
         echo "changed_files<<EOF" >> $GITHUB_ENV
         echo "$changed_files" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
