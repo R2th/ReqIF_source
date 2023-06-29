@@ -60,7 +60,7 @@ jobs:
           'note': 'Trigger from Github Action'
         }
         "
-        payload=$(echo "$payload" | sed "s/'/\"/g")
+        payload="${payload//\'/\"}"
         
         echo "$ENDPOINT""$PATH"
         
