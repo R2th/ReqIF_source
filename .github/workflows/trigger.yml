@@ -46,13 +46,11 @@ jobs:
         API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
         USERNAME: airflow
         PASSWORD: airflow
-      run: |
-        changed_files="${{ env.changed_files }}"
-        
+      run: |        
         payload="
         {
           \"conf\": {
-            \"reqif_files\": $(changed_files/"/\")
+            \"reqif_files\": ${{ env.changed_files }}
           },
           \"note\": \"Trigger from Github Action\"
         }
