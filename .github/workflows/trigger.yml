@@ -37,7 +37,7 @@ jobs:
         payload="${payload%?}" # Remove the trailing comma
         payload+="]"
         echo $payload
-        echo $payload >> $GITHUB_OUTPUT
+        echo "payload<<$payload" >> $GITHUB_OUTPUT
 
     - name: Trigger Airflow
       env:
