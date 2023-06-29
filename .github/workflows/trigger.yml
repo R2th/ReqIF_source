@@ -55,7 +55,7 @@ jobs:
           'note': 'Trigger from Github Action'
         }
         "
-        payload="${payload//'/\"}"
+        payload=$(echo "$payload" | sed "s/'/\"/g")
         
         
         curl -X POST \
