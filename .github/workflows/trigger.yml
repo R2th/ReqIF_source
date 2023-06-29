@@ -22,7 +22,7 @@ jobs:
         fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
 
     - name: Get changed files
-      id: changed_files
+      id: get_changed_files
       run: |
         if ${{ github.event_name == 'pull_request' }}; then
           echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
@@ -32,14 +32,15 @@ jobs:
 
     - name: Trigger Airflow
       env:
-        API_URL: https://ccd0-113-161-83-56.ngrok-free.app/api/v1/dags/thethree_reqif_to_rst/dagRuns
+        ENDPOINT: https://ccd0-113-161-83-56.ngrok-free.app
+        PATH: /api/v1/dags/thethree_reqif_to_rst/dagRuns
         USERNAME: airflow
         PASSWORD: airflow
       run: |
         changed_files="["
         
         IFS=$'\n'   # Set the input field separator to newline
-        for file in ${{ steps.changed_files.outputs.changed_files }}; do
+        for file in ${{ steps.get_changed_files.outputs.changed_files }}; do
           content=$(cat "$file" | gzip | base64 -w0)
           changed_files+="{'name': '$file', 'content': '$content'},"
         done
@@ -63,4 +64,4 @@ jobs:
           -H "ngrok-skip-browser-warning: True" \
           --user "$USERNAME:$PASSWORD" \
           -d "$payload" \
-          $API_URL
+          "$ENDPOINT$PATH"
